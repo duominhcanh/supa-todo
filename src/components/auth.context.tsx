@@ -2,7 +2,7 @@ import React, { useEffect, useState, createContext, useContext } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "../core/lib/init-supabase";
 
-export const UserContext = createContext<{
+export const AuthContext = createContext<{
   user: User | null;
   session: Session | null;
 }>({
@@ -10,7 +10,7 @@ export const UserContext = createContext<{
   session: null,
 });
 
-export const UserContextProvider = (props: any) => {
+export const AuthContextProvider = (props: any) => {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
 
@@ -20,7 +20,6 @@ export const UserContextProvider = (props: any) => {
     setUser(session?.user ?? null);
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log(`Supabase auth event: ${event}`);
         setSession(session);
         setUser(session?.user ?? null);
       }
@@ -36,13 +35,13 @@ export const UserContextProvider = (props: any) => {
     session,
     user,
   };
-  return <UserContext.Provider value={value} {...props} />;
+  return <AuthContext.Provider value={value} {...props} />;
 };
 
-export const useUser = () => {
-  const context = useContext(UserContext);
+export const useAuth = () => {
+  const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error(`useUser must be used within a UserContextProvider.`);
+    throw new Error(`useAuth must be used within a AuthContextProvider.`);
   }
   return context;
 };

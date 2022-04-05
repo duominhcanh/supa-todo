@@ -1,4 +1,6 @@
 import { SupabaseClient } from "@supabase/supabase-js";
+/** URL polyfill. Required for Supabase queries to work in React Native. */
+import "react-native-url-polyfill/auto";
 
 export class TodoService {
   private context: SupabaseClient;
@@ -27,14 +29,6 @@ export class TodoService {
       .single();
 
     return data!;
-  }
-
-  async setDoneAsync(id: number, isComplete: boolean): Promise<void> {
-    const { data, error } = await this.context
-      .from<Todo>("todos")
-      .update({ is_complete: isComplete })
-      .eq("id", id)
-      .single();
   }
 
   async deleteAsync(id: number): Promise<void> {

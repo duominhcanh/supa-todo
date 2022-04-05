@@ -1,11 +1,15 @@
-import { StatusBar } from "expo-status-bar";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
-import { Platform, StyleSheet, View } from "react-native";
-import { colors, Text, ThemeProvider } from "react-native-elements";
-import Auth from "./src/components/auth";
-import List from "./src/components/todo-list";
-import { UserContextProvider, useUser } from "./src/components/user-context";
-import { Styles } from "./src/core/lib/constants";
+import { Platform } from "react-native";
+import { colors, ThemeProvider } from "react-native-elements";
+import { AuthContextProvider } from "./src/components/auth.context";
+import LoginScreen from "./src/screens/login.screen";
+import MainScreen from "./src/screens/main.screen";
+import RegisterScreen from "./src/screens/register.screen";
+
+import { LogBox } from "react-native";
+LogBox.ignoreLogs(["Setting a timer"]);
 
 const theme = {
   colors: {
@@ -16,36 +20,24 @@ const theme = {
   },
 };
 
-const Container = () => {
-  const { user } = useUser();
-
-  return user ? <List /> : <Auth />;
-};
+const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <UserContextProvider>
-      <ThemeProvider theme={theme}>
-        <View style={styles.container}>
-          <View style={styles.verticallySpaced}>
-            <Text h2>Todo List</Text>
-          </View>
-          <Container />
-          <StatusBar style="auto" />
-        </View>
-      </ThemeProvider>
-    </UserContextProvider>
+    <ThemeProvider theme={theme}>
+      <AuthContextProvider>
+        <NavigationContainer>
+          <Stack.Navigator
+            screenOptions={{
+              headerShown: false,
+            }}
+          >
+            <Stack.Screen name="login" component={LoginScreen} />
+            <Stack.Screen name="register" component={RegisterScreen} />
+            <Stack.Screen name="main" component={MainScreen} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </AuthContextProvider>
+    </ThemeProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginTop: 60,
-    padding: 15,
-  },
-  verticallySpaced: {
-    paddingTop: 4,
-    paddingBottom: 4,
-    alignSelf: "stretch",
-  },
-});
